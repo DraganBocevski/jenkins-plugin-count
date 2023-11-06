@@ -63,6 +63,7 @@ for job in "${!job_plugins[@]}"; do
 done
 
 # CSV last row - total count of plugin used across all jobs
+echo -n "TOTALS," >> $OUTPUT_FILE
 for plugin in "${!all_plugins[@]}"; do
   count="${all_plugins[$plugin]}"
   echo -n "$count," >> $OUTPUT_FILE
