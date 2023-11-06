@@ -10,18 +10,23 @@ declare -A job_plugins # Plugins used in the job
 declare -A all_plugins # Plugins used overall for all jobs 
 
 # Get the plugin names per job
-for config in $(find $JOBS_DIR -type f -name config.xml); do   
+while IFS= read -r config; do
+    config_underscored=${config// /_}
+    
     read -r first_line < "$config"
     if [[ $first_line == "$JOB_TYPE"* ]]
     then
-      # We expect the config.xml in $JENKINS_HOME/jobs/job_name/config.xml
-      job_name=$(basename $(dirname $config))
+      # We expect the config.xml in $JENKINS_DIR/jobs/job_name/config.xml
+      # We substitute whitespaces in path with underscores. We remove the $JENKINS_DIR/jobs/ prefix from path
+      prefix_len=`expr length $JENKINS_DIR/jobs/` 
+      job_name=${config_underscored:prefix_len}
+      job_name=$(echo "$job_name" | sed 's/\/jobs//g')
 
       # Get all plugins for job
       # Example plugin lines in config.xml:
       # <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.10">
       # <hudson.plugins.buildblocker.BuildBlockerProperty plugin="build-blocker-plugin@1.7.8">
-      plugins=$(grep -oE 'plugin="[^"]+"' $config | cut -d '@' -f1 | cut -d '"' -f2 | sort | uniq | tr '\n' ' ')
+      plugins=$(grep -oE 'plugin="[^"]+"' "$config" | cut -d '@' -f1 | cut -d '"' -f2 | sort | uniq | tr '\n' ' ')
     
       # Save plugins for the job as a space separated string like:
       # "artifactory git jira mailer"
@@ -31,15 +36,10 @@ for config in $(find $JOBS_DIR -type f -name config.xml); do
       # Keys: Plugin names
       # Values: Number of times a plugin in encountered across all jobs
       for plugin in $plugins; do
-        if [ -v all_plugins["$plugin"] ]
-          then
-            ((all_plugins["$plugin"]++))
-          else
-            all_plugins["$plugin"]=1
-          fi
+        ((all_plugins["$plugin"]++))
       done
     fi
-done
+done < <(find "$JOBS_DIR" -type f -name 'config.xml')
 
 
 # We have the data. Now we create the CSV file and output to screen
