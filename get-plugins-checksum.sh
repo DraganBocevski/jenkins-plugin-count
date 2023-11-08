@@ -13,9 +13,11 @@ declare -A all_plugins # Plugins used overall for all jobs
 while IFS= read -r config; do
     config_underscored=${config// /_}
     
-    read -r first_line < "$config"
-    if [[ $first_line == "$JOB_TYPE"* ]]
-    then
+    #read -r first_line < "$config"
+    #if [[ $first_line == "$JOB_TYPE"* ]]
+    #then
+    if grep -q "^$JOB_TYPE" "$config"; then
+      echo $config
       # We expect the config.xml in $JENKINS_DIR/jobs/job_name/config.xml
       # We substitute whitespaces in path with underscores. We remove the $JENKINS_DIR/jobs/ prefix from path
       prefix_len=`expr length $JENKINS_DIR/jobs/` 
@@ -53,13 +55,18 @@ echo "" >> $OUTPUT_FILE
 # CSV rows - For each job (row), if a plugin (column) is used, we put 1, otherwise 0
 for job in "${!job_plugins[@]}"; do
     echo -n "$job," >> $OUTPUT_FILE
+    cksum=""
     for plugin in "${!all_plugins[@]}"; do
         if [[ "${job_plugins[$job]}" == *"$plugin"* ]]; then
             echo -n "1," >> $OUTPUT_FILE
+            cksum+='1'
         else
             echo -n "0," >> $OUTPUT_FILE
+            cksum+='0'
         fi
     done
+    checksum=$(echo $cksum | sha1sum |  sed 's/ -//')
+    echo $checksum >> $OUTPUT_FILE
     echo "" >> $OUTPUT_FILE
 done
 
