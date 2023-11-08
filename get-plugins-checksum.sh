@@ -50,7 +50,7 @@ done < <(find "$JOBS_DIR" -type f -name 'config.xml')
 echo -n "Job/Plugin," > $OUTPUT_FILE
 printf "%s," "${!all_plugins[@]}" >> $OUTPUT_FILE
 echo -n "CHECKSUM" >> $OUTPUT_FILE
-echo "" >> $OUTPUT_FILE
+#echo "" >> $OUTPUT_FILE
 
 # CSV rows - For each job (row), if a plugin (column) is used, we put 1, otherwise 0
 for job in "${!job_plugins[@]}"; do
