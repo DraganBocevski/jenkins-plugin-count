@@ -26,7 +26,7 @@ while IFS= read -r config; do
     #if [[ $first_line == "$JOB_TYPE"* ]]; then
     if grep -q "^$JOB_TYPE" "$config"; then
       ((count_jobs++))
-      if grep -q "^<disabled>true</disabled>" "$config"; then
+      if grep -q "<disabled>true</disabled>" "$config"; then
         echo -e "\e[93mDisabled JOB  ...\e[0m        $job_name"
         ((count_disabled++))
       else
