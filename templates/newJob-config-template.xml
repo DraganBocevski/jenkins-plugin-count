@@ -1,0 +1,32 @@
+<flow-definition plugin="workflow-job@1373.1388.cb-v4e92e49b_10db_">
+    <description/>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.11"/>
+        <hudson.plugins.buildblocker.BuildBlockerProperty plugin="build-blocker-plugin@1.7.9">
+            <useBuildBlocker>false</useBuildBlocker>
+            <blockLevel>GLOBAL</blockLevel>
+            <scanQueueFor>DISABLED</scanQueueFor>
+            <blockingJobs/>
+        </hudson.plugins.buildblocker.BuildBlockerProperty>
+        <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@320.v5a_0933a_e7d61">
+            <autoRebuild>false</autoRebuild>
+            <rebuildDisabled>false</rebuildDisabled>
+        </com.sonyericsson.rebuild.RebuildSettings>
+        <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.14">
+            <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+            <throttleEnabled>false</throttleEnabled>
+            <throttleOption>project</throttleOption>
+            <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+            <paramsToUseForLimit/>
+        </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+    </properties>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3802.vd42b_fcf00b_a_c">
+        <script>
+         ${PIPELINE}
+        </script>
+        <sandbox>true</sandbox>
+    </definition>
+    <triggers/>
+    <disabled>false</disabled>
+</flow-definition>
