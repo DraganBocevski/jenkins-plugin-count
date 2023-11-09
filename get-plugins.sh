@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 #JENKINS_DIR=$JENKINS_HOME
 JENKINS_DIR=$(pwd)
 JOBS_DIR="$JENKINS_DIR/jobs"
