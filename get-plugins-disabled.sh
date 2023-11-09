@@ -61,19 +61,23 @@ done < <(find "$JOBS_DIR" -type f -name 'config.xml')
 # CSV header row (all_plugins keys)
 echo -n "Job/Plugin," > $OUTPUT_FILE
 printf "%s," "${!all_plugins[@]}" >> $OUTPUT_FILE
-echo "" >> $OUTPUT_FILE
+echo "CHECKSUM" >> $OUTPUT_FILE
 
 # CSV rows - For each job (row), if a plugin (column) is used, we put 1, otherwise 0
 for job in "${!job_plugins[@]}"; do
     echo -n "$job," >> $OUTPUT_FILE
+    cksum=""
     for plugin in "${!all_plugins[@]}"; do
         if [[ "${job_plugins[$job]}" == *"$plugin"* ]]; then
             echo -n "1," >> $OUTPUT_FILE
+            cksum+='1'
         else
             echo -n "0," >> $OUTPUT_FILE
+            cksum+='0'
         fi
     done
-    echo "" >> $OUTPUT_FILE
+    checksum=$(echo $cksum | sha1sum |  sed 's/ -//')
+    echo $checksum >> $OUTPUT_FILE
 done
 
 # CSV last row - total count of plugin used across all jobs
